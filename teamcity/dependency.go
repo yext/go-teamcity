@@ -43,16 +43,12 @@ func (s *DependencyService) AddSnapshotDependency(dep *SnapshotDependency) (*Sna
 	}
 
 	resp, err := s.snapshotSling.New().Post("").BodyJSON(dep).Receive(&out, &depError)
-	if err == nil && depError != nil{
-		err = fmt.Errorf("error encountered fetching dependency: %v", depError)
-	}
-
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Unknown error when adding snapshot dependency, statusCode: %d", resp.StatusCode)
+		return nil, fmt.Errorf("Unknown error when adding snapshot dependency, statusCode: %d with the error: %v", resp.StatusCode, depError)
 	}
 	out.BuildTypeID = s.BuildTypeID
 	return &out, nil
@@ -67,16 +63,12 @@ func (s *DependencyService) AddArtifactDependency(dep *ArtifactDependency) (*Art
 	}
 
 	resp, err := s.snapshotSling.New().Post("").BodyJSON(dep).Receive(&out, &depError)
-	if err == nil && depError != nil{
-		err = fmt.Errorf("error encountered fetching dependency: %v", depError)
-	}
-
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Unknown error when adding snapshot dependency, statusCode: %d", resp.StatusCode)
+		return nil, fmt.Errorf("Unknown error when adding snapshot dependency, statusCode: %d with the error: %v", resp.StatusCode, depError)
 	}
 
 	out.SetBuildTypeID(s.BuildTypeID)
