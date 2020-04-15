@@ -1,4 +1,4 @@
-module github.com/cvbarros/go-teamcity
+module github.com/yext/go-teamcity
 
 go 1.14
 
