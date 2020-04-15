@@ -1,7 +1,5 @@
 module github.com/yext/go-teamcity
 
-go 1.14
-
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dghubble/sling v1.3.0
