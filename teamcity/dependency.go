@@ -56,7 +56,7 @@ func (s *DependencyService) AddSnapshotDependency(dep *SnapshotDependency) (*Sna
 //AddArtifactDependency adds a new artifact dependency to build type
 func (s *DependencyService) AddArtifactDependency(dep *ArtifactDependency) (*ArtifactDependency, error) {
 	var out ArtifactDependency
-	var depError interface{}
+	var depError string
 	if dep == nil {
 		return nil, errors.New("dep can't be nil")
 	}
