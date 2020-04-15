@@ -25,7 +25,7 @@ func (responseDecoder) Decode(resp *http.Response, v interface{}) error {
 	}
 	err = json.Unmarshal(bodyBytes, v)
 	if err != nil {
-		return fmt.Errorf("%v: %s", err, string(b))
+		return fmt.Errorf("%v: %s", err, string(bodyBytes))
 	}
 
 	return nil
