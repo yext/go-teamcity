@@ -36,7 +36,7 @@ func NewDependencyService(buildTypeID string, c *http.Client, base *sling.Sling)
 //AddSnapshotDependency adds a new snapshot dependency to build type
 func (s *DependencyService) AddSnapshotDependency(dep *SnapshotDependency) (*SnapshotDependency, error) {
 	var out SnapshotDependency
-	var depError interface{}
+	var depError string
 	if dep == nil {
 		return nil, errors.New("dep can't be nil")
 	}

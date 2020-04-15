@@ -18,13 +18,15 @@ func (responseDecoder) Decode(resp *http.Response, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(bodyBytes)
-	if err != nil {
-		return fmt.Errorf("%v: %s", err, string(bodyBytes))
+
+	if vs, ok := v.(*string); ok {
+		*vs = string(bodyBytes)
+		return nil
 	}
-	err = json.Unmarshal(b, v)
+	err = json.Unmarshal(bodyBytes, v)
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, string(b))
 	}
+
 	return nil
 }
