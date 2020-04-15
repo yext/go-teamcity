@@ -2,9 +2,14 @@ package teamcity
 
 import (
 	"encoding/json"
+	"fmt"
+
 	"io/ioutil"
 	"net/http"
 )
+
+// responseDecoder decodes a http response body into the interface.
+// To accomplish this, it first marshals the body into json and then unmarshal it into the interface.
 
 type responseDecoder struct{}
 
@@ -13,10 +18,13 @@ func (responseDecoder) Decode(resp *http.Response, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	b, err:= json.Marshal(bodyBytes)
+	b, err := json.Marshal(bodyBytes)
 	if err != nil {
-		return err
+		return fmt.Errorf("%v: %s", err, string(bodyBytes))
 	}
 	err = json.Unmarshal(b, v)
-	return err
+	if err != nil {
+		return fmt.Errorf("%v: %s", err, string(b))
+	}
+	return nil
 }
