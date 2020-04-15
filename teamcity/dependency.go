@@ -41,7 +41,7 @@ func (s *DependencyService) AddSnapshotDependency(dep *SnapshotDependency) (*Sna
 		return nil, errors.New("dep can't be nil")
 	}
 
-	resp, err := s.snapshotSling.New().Post("").BodyJSON(dep).Receive(&out, &depError)
+	resp, err := s.snapshotSling.New().ResponseDecoder(responseDecoder{}).Post("").BodyJSON(dep).Receive(&out, &depError)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (s *DependencyService) AddArtifactDependency(dep *ArtifactDependency) (*Art
 		return nil, errors.New("dep can't be nil")
 	}
 
-	resp, err := s.snapshotSling.New().Post("").BodyJSON(dep).Receive(&out, &depError)
+	resp, err := s.snapshotSling.New().ResponseDecoder(responseDecoder{}).Post("").BodyJSON(dep).Receive(&out, &depError)
 	if err != nil {
 		return nil, err
 	}
