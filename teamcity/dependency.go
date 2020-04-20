@@ -61,6 +61,7 @@ func (s *DependencyService) AddArtifactDependency(dep *ArtifactDependency) (*Art
 		return nil, errors.New("dep can't be nil")
 	}
 
+
 	resp, err := s.artifactSling.New().ResponseDecoder(responseDecoder{}).Post("").BodyJSON(dep).Receive(&out, &depError)
 	if err != nil {
 		return nil, err
