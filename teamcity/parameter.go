@@ -41,6 +41,12 @@ type Parameter struct {
 	Value string `json:"value" xml:"value"`
 
 	Type string `json:"-"`
+
+	Specs *ParameterSpecs `json:"type,omitempty" xml:"type"`
+}
+
+type ParameterSpecs struct {
+	RawValue string `json:"rawValue" xml:"rawValue"`
 }
 
 //NewParametersEmpty returns an empty collection of Parameters
@@ -70,10 +76,14 @@ func NewParameter(t string, name string, value string) (*Parameter, error) {
 	}
 
 	return &Parameter{
-		Type:  string(t),
+		Type:  t,
 		Name:  name,
 		Value: value,
 	}, nil
+}
+
+func (p *Parameter) AddParameterSpecs(specs string) {
+	p.Specs = &ParameterSpecs{RawValue: specs}
 }
 
 //MarshalJSON implements JSON serialization for Parameter
@@ -106,6 +116,10 @@ func (p *Parameter) UnmarshalJSON(data []byte) error {
 	}
 	p.Value = aux.Value
 	p.Type = paramType
+
+	if aux.Type != nil {
+		p.Specs = &ParameterSpecs{RawValue: aux.Type.RawValue}
+	}
 	return nil
 }
 
@@ -128,6 +142,10 @@ func (p *Parameter) Property() *Property {
 	if p.Inherited {
 		out.Inherited = NewBool(p.Inherited)
 	}
+
+	if p.Specs != nil {
+		out.Type = &Type{RawValue: p.Specs.RawValue}
+	}
 	return out
 }
 
@@ -149,7 +167,25 @@ func (p *Parameters) AddOrReplaceValue(t string, n string, v string) {
 
 // AddOrReplaceParameter will update a parameter value if another parameter with the same name exists. It won't replace the Parameter struct within the Parameters collection.
 func (p *Parameters) AddOrReplaceParameter(param *Parameter) {
-	p.AddOrReplaceValue(param.Type, param.Name, param.Value)
+	for _, elem := range p.Items {
+		if elem == nil {
+			continue
+		}
+
+		if elem.Name == param.Name {
+			elem.Value = param.Value
+			if param.Specs != nil {
+				elem.Specs = &ParameterSpecs{param.Specs.RawValue}
+			}
+			return
+		}
+	}
+
+	newParam, _ := NewParameter(param.Type, param.Name, param.Value)
+	if param.Specs != nil {
+		newParam.Specs = &ParameterSpecs{param.Specs.RawValue}
+	}
+	p.Add(newParam)
 }
 
 // Add a new parameter to this collection
