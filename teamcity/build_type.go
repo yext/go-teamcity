@@ -263,7 +263,7 @@ func (s *BuildTypeService) GetByID(id string) (*BuildType, error) {
 // Rename changes the name of a build type by sending a PUT request
 func (s *BuildTypeService) Rename(id string, name string) error {
 	locator := LocatorID(id).String()
-	_, err := s.restHelper.putTextPlain(locator + "/name", name, "build type name")
+	_, err := s.restHelper.putTextPlain(locator+"/name", name, "build type name")
 	if err != nil {
 		return err
 	}
@@ -351,6 +351,25 @@ func (s *BuildTypeService) AttachVcsRootEntry(id string, entry *VcsRootEntry) er
 	}
 
 	return nil
+}
+
+// DetachVcsRootEntry removes the VcsRootEntry from this build type
+func (s *BuildTypeService) DetachVcsRootEntry(btID string, entryID string) error {
+	_, err := s.sling.New().Delete(fmt.Sprintf("%s/vcs-root-entries/%s", LocatorID(btID), entryID)).ReceiveSuccess(nil)
+
+	return err
+}
+
+// GetVcsRootEntries returns the VcsRootEntries for a given built type
+func (s *BuildTypeService) GetVcsRootEntries(btID string) (*VcsRootEntries, error) {
+	var entries VcsRootEntries
+	_, err := s.sling.New().Get(fmt.Sprintf("%s/vcs-root-entries/", LocatorID(btID))).ReceiveSuccess(&entries)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &entries, nil
 }
 
 // AddStep creates a new build step for the build configuration with given id.
