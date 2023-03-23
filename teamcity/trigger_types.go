@@ -28,12 +28,13 @@ var TriggerTypes = struct {
 }
 
 type triggerJSON struct {
-	BuildTypeID string      `json:"-"`
-	Disabled    *bool       `json:"disabled,omitempty" xml:"disabled"`
-	Href        string      `json:"href,omitempty" xml:"href"`
-	ID          string      `json:"id,omitempty" xml:"id"`
-	Properties  *Properties `json:"properties,omitempty"`
-	Type        string      `json:"type,omitempty" xml:"type"`
+	BuildTypeID        string                     `json:"-"`
+	Disabled           *bool                      `json:"disabled,omitempty" xml:"disabled"`
+	Href               string                     `json:"href,omitempty" xml:"href"`
+	ID                 string                     `json:"id,omitempty" xml:"id"`
+	Properties         *Properties                `json:"properties,omitempty"`
+	BuildCustomization *BuildTriggerCustomization `json:"buildCustomization,omitempty" xml:"buildCustomization"`
+	Type               string                     `json:"type,omitempty" xml:"type"`
 }
 
 // Trigger represents a build trigger to be associated with a build configuration. Use the constructor methods to create new instances.

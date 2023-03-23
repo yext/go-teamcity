@@ -155,6 +155,7 @@ func (t *TriggerSchedule) read(dt *triggerJSON) error {
 	}
 
 	t.Options = t.triggerJSON.Properties.triggerScheduleOptions()
+	t.Options.BuildCustomization = t.triggerJSON.BuildCustomization
 
 	switch t.SchedulingPolicy {
 	case TriggerSchedulingDaily, TriggerSchedulingWeekly:
@@ -239,10 +240,11 @@ func (t *TriggerSchedule) MarshalJSON() ([]byte, error) {
 	}
 
 	out := &triggerJSON{
-		ID:         t.ID(),
-		Type:       t.Type(),
-		Disabled:   NewBool(t.Disabled()),
-		Properties: props,
+		ID:                 t.ID(),
+		Type:               t.Type(),
+		Disabled:           NewBool(t.Disabled()),
+		Properties:         props,
+		BuildCustomization: t.Options.BuildCustomization,
 	}
 
 	return json.Marshal(out)
