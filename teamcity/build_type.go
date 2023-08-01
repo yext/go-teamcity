@@ -63,7 +63,7 @@ type BuildType struct {
 	buildTypeJSON  *buildTypeJSON
 }
 
-//NewBuildType returns a build configuration with default options
+// NewBuildType returns a build configuration with default options
 func NewBuildType(projectID string, name string) (*BuildType, error) {
 	if projectID == "" || name == "" {
 		return nil, fmt.Errorf("projectID and name are required")
@@ -84,7 +84,7 @@ func NewBuildType(projectID string, name string) (*BuildType, error) {
 	}, nil
 }
 
-//NewBuildTypeTemplate returns a build configuration template with default options
+// NewBuildTypeTemplate returns a build configuration template with default options
 func NewBuildTypeTemplate(projectID string, name string) (*BuildType, error) {
 	if projectID == "" || name == "" {
 		return nil, fmt.Errorf("projectID and name are required")
@@ -104,7 +104,7 @@ func NewBuildTypeTemplate(projectID string, name string) (*BuildType, error) {
 	}, nil
 }
 
-//MarshalJSON implements JSON serialization for BuildType
+// MarshalJSON implements JSON serialization for BuildType
 func (b *BuildType) MarshalJSON() ([]byte, error) {
 	optProps := b.Options.properties()
 
@@ -128,7 +128,7 @@ func (b *BuildType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(out)
 }
 
-//UnmarshalJSON implements JSON deserialization for TriggerSchedule
+// UnmarshalJSON implements JSON deserialization for TriggerSchedule
 func (b *BuildType) UnmarshalJSON(data []byte) error {
 	var aux buildTypeJSON
 	if err := json.Unmarshal(data, &aux); err != nil {
@@ -270,9 +270,9 @@ func (s *BuildTypeService) Rename(id string, name string) error {
 	return nil
 }
 
-//Update changes the resource in-place for this build configuration.
-//TeamCity API does not support "PUT" on the whole Build Configuration resource, so the only updateable field is "Description". Other field updates will be ignored.
-//This method also updates Settings and Parameters, but this is not an atomic operation. If an error occurs, it will be returned to caller what was updated or not.
+// Update changes the resource in-place for this build configuration.
+// TeamCity API does not support "PUT" on the whole Build Configuration resource, so the only updateable field is "Description". Other field updates will be ignored.
+// This method also updates Settings and Parameters, but this is not an atomic operation. If an error occurs, it will be returned to caller what was updated or not.
 func (s *BuildTypeService) Update(buildType *BuildType) (*BuildType, error) {
 	_, err := s.restHelper.putTextPlain(buildType.ID+"/description", buildType.Description, "build type description")
 
@@ -311,7 +311,14 @@ func (s *BuildTypeService) Update(buildType *BuildType) (*BuildType, error) {
 	return out, nil
 }
 
-//Delete a build type resource
+// Pause a build type resource
+func (s *BuildTypeService) Pause(id string) error {
+	locator := LocatorID(id).String()
+	_, err := s.restHelper.putTextPlain(locator+"/paused", "true", "pause")
+	return err
+}
+
+// Delete a build type resource
 func (s *BuildTypeService) Delete(id string) error {
 	request, _ := s.sling.New().Delete(id).Request()
 	response, err := s.httpClient.Do(request)
@@ -385,7 +392,7 @@ func (s *BuildTypeService) AddStep(id string, step Step) (Step, error) {
 	return created, nil
 }
 
-//GetSteps return the list of steps for a Build configuration with given id.
+// GetSteps return the list of steps for a Build configuration with given id.
 func (s *BuildTypeService) GetSteps(id string) ([]Step, error) {
 	var aux stepsJSON
 	path := fmt.Sprintf("%s/steps/", LocatorID(id))
@@ -421,7 +428,7 @@ func (s *BuildTypeService) UpdateSettings(id string, settings *Properties) error
 	return nil
 }
 
-//DeleteStep removes a build step from this build type by its id
+// DeleteStep removes a build step from this build type by its id
 func (s *BuildTypeService) DeleteStep(id string, stepID string) error {
 	_, err := s.sling.New().Delete(fmt.Sprintf("%s/steps/%s", LocatorID(id), stepID)).ReceiveSuccess(nil)
 
