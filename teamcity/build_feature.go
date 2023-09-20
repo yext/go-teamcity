@@ -10,7 +10,7 @@ import (
 	"github.com/dghubble/sling"
 )
 
-//BuildFeature is an interface representing different types of build features that can be added to a build type.
+// BuildFeature is an interface representing different types of build features that can be added to a build type.
 type BuildFeature interface {
 	ID() string
 	SetID(value string)
@@ -43,7 +43,7 @@ type Features struct {
 	Items []buildFeatureJSON `json:"feature"`
 }
 
-//BuildFeatureService provides operations for managing build features for a buildType
+// BuildFeatureService provides operations for managing build features for a buildType
 type BuildFeatureService struct {
 	BuildTypeID string
 	httpClient  *http.Client
@@ -61,7 +61,7 @@ func newBuildFeatureService(buildTypeID string, c *http.Client, base *sling.Slin
 	}
 }
 
-//Create adds a new build feature to build type
+// Create adds a new build feature to build type
 func (s *BuildFeatureService) Create(bf BuildFeature) (BuildFeature, error) {
 	if bf == nil {
 		return nil, errors.New("bf can't be nil")
@@ -87,7 +87,7 @@ func (s *BuildFeatureService) Create(bf BuildFeature) (BuildFeature, error) {
 	return s.readBuildFeatureResponse(resp)
 }
 
-//GetByID returns a build feature by its id
+// GetByID returns a build feature by its id
 func (s *BuildFeatureService) GetByID(id string) (BuildFeature, error) {
 	req, err := s.base.New().Get(id).Request()
 
@@ -126,18 +126,18 @@ func (s *BuildFeatureService) GetBuildFeatures() ([]BuildFeature, error) {
 			return nil, err
 		}
 
-		cbf := GenericBuildFeature{}
-		err = cbf.UnmarshalJSON(dt)
+		gbf := GenericBuildFeature{}
+		err = gbf.UnmarshalJSON(dt)
 		if err != nil {
 			return nil, err
 		}
-		buildFeatures[i] = &cbf
+		buildFeatures[i] = &gbf
 	}
 
 	return buildFeatures, nil
 }
 
-//Delete removes a build feature from the build configuration by its id.
+// Delete removes a build feature from the build configuration by its id.
 func (s *BuildFeatureService) Delete(id string) error {
 	request, _ := s.base.New().Delete(id).Request()
 	response, err := s.httpClient.Do(request)
@@ -207,14 +207,13 @@ func (s *BuildFeatureService) readBuildFeatureResponse(resp *http.Response) (Bui
 		if err := csp.UnmarshalJSON(bodyBytes); err != nil {
 			return nil, err
 		}
-
 		out = &csp
 	default:
-		var cbf GenericBuildFeature
-		if err := cbf.UnmarshalJSON(bodyBytes); err != nil {
+		var gbf GenericBuildFeature
+		if err := gbf.UnmarshalJSON(bodyBytes); err != nil {
 			return nil, err
 		}
-		return out, nil
+		out = &gbf
 	}
 
 	out.SetBuildTypeID(s.BuildTypeID)
