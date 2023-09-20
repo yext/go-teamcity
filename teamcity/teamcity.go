@@ -15,10 +15,10 @@ import (
 	_ "github.com/motemen/go-loghttp/global"
 )
 
-//DebugRequests toggle to enable tracing requests to stdout
+// DebugRequests toggle to enable tracing requests to stdout
 var DebugRequests = false
 
-//DebugResponses toggle to enable tracing responses to stdout
+// DebugResponses toggle to enable tracing responses to stdout
 var DebugResponses = false
 
 func init() {
@@ -34,7 +34,7 @@ func init() {
 	}
 }
 
-//Client represents the base for connecting to TeamCity
+// Client represents the base for connecting to TeamCity
 type Client struct {
 	userName, password, address string
 	baseURI                     string
@@ -86,27 +86,32 @@ func newClientInstance(userName, password, address string, httpClient *http.Clie
 	}, nil
 }
 
-//AgentRequirementService returns a service to manage agent requirements for a build configuration with given id
+// AgentRequirementService returns a service to manage agent requirements for a build configuration with given id
 func (c *Client) AgentRequirementService(id string) *AgentRequirementService {
 	return newAgentRequirementService(id, c.HTTPClient, c.commonBase.New())
 }
 
-//BuildFeatureService returns a service to manage agent requirements for a build configuration with given id
+// BuildFeatureService returns a service to manage build features for a build configuration with given id
 func (c *Client) BuildFeatureService(id string) *BuildFeatureService {
 	return newBuildFeatureService(id, c.HTTPClient, c.commonBase.New())
 }
 
-//DependencyService returns a service to manage snapshot and artifact dependencies for a build configuration with given id
+// ProjectFeatureService returns a service to manage project features for a project with given id
+func (c *Client) ProjectFeatureService(id string) *ProjectFeatureService {
+	return newProjectFeatureService(id, c.HTTPClient, c.commonBase.New())
+}
+
+// DependencyService returns a service to manage snapshot and artifact dependencies for a build configuration with given id
 func (c *Client) DependencyService(id string) *DependencyService {
 	return NewDependencyService(id, c.HTTPClient, c.commonBase.New())
 }
 
-//BuildTemplateService returns a service to manage template associations for a build configuration with given id
+// BuildTemplateService returns a service to manage template associations for a build configuration with given id
 func (c *Client) BuildTemplateService(id string) *BuildTemplateService {
 	return NewBuildTemplateService(id, c.HTTPClient, c.commonBase.New())
 }
 
-//TriggerService returns a service to manage build triggers for a build configuration with given id
+// TriggerService returns a service to manage build triggers for a build configuration with given id
 func (c *Client) TriggerService(buildTypeID string) *TriggerService {
 	return newTriggerService(buildTypeID, c.HTTPClient, c.commonBase.New())
 }
