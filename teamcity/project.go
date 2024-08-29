@@ -22,6 +22,7 @@ type Project struct {
 	ParentProjectID string              `json:"parentProjectId,omitempty" xml:"parentProjectId"`
 	WebURL          string              `json:"webUrl,omitempty" xml:"webUrl"`
 	BuildTypes      BuildTypeReferences `json:"buildTypes,omitempty" xml:"buildTypes"`
+	Projects        ProjectReferences   `json:"projects,omitempty" xml:"projects"`
 }
 
 // ProjectReference contains basic information, usually enough to use as a type for relationships.
@@ -32,6 +33,15 @@ type ProjectReference struct {
 	Description string `json:"description,omitempty" xml:"description"`
 	Href        string `json:"href,omitempty" xml:"href"`
 	WebURL      string `json:"webUrl,omitempty" xml:"webUrl"`
+}
+
+// ProjectReferences represents a collection of *ProjectReference.
+type ProjectReferences struct {
+	// count
+	Count int32 `json:"count,omitempty" xml:"count"`
+
+	// project
+	Items []*ProjectReference `json:"project"`
 }
 
 // ProjectService has operations for handling projects
