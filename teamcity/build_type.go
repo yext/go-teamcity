@@ -271,7 +271,7 @@ func (s *BuildTypeService) Rename(id string, name string) error {
 	return nil
 }
 
-// Move updates the parent project of the build type by sending a PUT request
+// Move updates the parent project of a build type by sending a POST request
 func (s *BuildTypeService) Move(id string, projectID string) error {
 	var out bytes.Buffer
 	locator := LocatorID(id).String()
