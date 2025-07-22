@@ -1,6 +1,7 @@
 package teamcity
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -264,6 +265,17 @@ func (s *BuildTypeService) GetByID(id string) (*BuildType, error) {
 func (s *BuildTypeService) Rename(id string, name string) error {
 	locator := LocatorID(id).String()
 	_, err := s.restHelper.putTextPlain(locator+"/name", name, "build type name")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Move updates the parent project of the build type by sending a PUT request
+func (s *BuildTypeService) Move(id string, projectID string) error {
+	var out bytes.Buffer
+	locator := LocatorID(id).String()
+	err := s.restHelper.post(fmt.Sprintf("%s/move?targetProjectId=%s", locator, projectID), nil, &out, "build type project id")
 	if err != nil {
 		return err
 	}
