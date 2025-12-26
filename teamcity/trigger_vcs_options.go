@@ -22,17 +22,18 @@ type TriggerVcsOptions struct {
 	enableQueueOptimization bool
 	perCheckinTriggering    bool `prop:"branch"`
 
-	GroupUserCheckins    bool
-	QuietPeriodMode      VcsTriggerQuietPeriodMode
-	QuietPeriodInSeconds int
+	GroupUserCheckins          bool
+	SnapshotDependencyTriggers bool
+	QuietPeriodMode            VcsTriggerQuietPeriodMode
+	QuietPeriodInSeconds       int
 }
 
 // NewTriggerVcsOptions initialize a TriggerVcsOptions instance with same defaults as TeamCity UI
 //
 // Defaults:
-//	- GroupCheckins = false
-//	- EnableQueueOptimization = false
-func NewTriggerVcsOptions(mode VcsTriggerQuietPeriodMode, seconds int) (*TriggerVcsOptions, error) {
+//   - GroupCheckins = false
+//   - EnableQueueOptimization = true
+func NewTriggerVcsOptions(snapshotTriggers bool, mode VcsTriggerQuietPeriodMode, seconds int) (*TriggerVcsOptions, error) {
 	quietPeriodInSeconds := 0
 	if mode == QuietPeriodCustom {
 		if seconds <= 0 {
@@ -42,20 +43,21 @@ func NewTriggerVcsOptions(mode VcsTriggerQuietPeriodMode, seconds int) (*Trigger
 	}
 
 	return &TriggerVcsOptions{
-		perCheckinTriggering:    false,
-		enableQueueOptimization: true,
-		GroupUserCheckins:       false,
-		QuietPeriodMode:         mode,
-		QuietPeriodInSeconds:    quietPeriodInSeconds,
+		perCheckinTriggering:       false,
+		enableQueueOptimization:    true,
+		GroupUserCheckins:          false,
+		SnapshotDependencyTriggers: snapshotTriggers,
+		QuietPeriodMode:            mode,
+		QuietPeriodInSeconds:       quietPeriodInSeconds,
 	}, nil
 }
 
-//QueueOptimization gets the value of enableQueueOptimization property
+// QueueOptimization gets the value of enableQueueOptimization property
 func (o *TriggerVcsOptions) QueueOptimization() bool {
 	return o.enableQueueOptimization
 }
 
-//SetQueueOptimization toggles allowing the server to replace an already started build or a more recently queued one if new changes are detected. If set to true, PerCheckinTriggering will be disabled.
+// SetQueueOptimization toggles allowing the server to replace an already started build or a more recently queued one if new changes are detected. If set to true, PerCheckinTriggering will be disabled.
 func (o *TriggerVcsOptions) SetQueueOptimization(enable bool) {
 	o.enableQueueOptimization = enable
 	if enable {
@@ -63,7 +65,7 @@ func (o *TriggerVcsOptions) SetQueueOptimization(enable bool) {
 	}
 }
 
-//PerCheckinTriggering gets the value of perCheckinTriggering property
+// PerCheckinTriggering gets the value of perCheckinTriggering property
 func (o *TriggerVcsOptions) PerCheckinTriggering() bool {
 	return o.perCheckinTriggering
 }
@@ -109,6 +111,11 @@ func (o *TriggerVcsOptions) properties() *Properties {
 		props = append(props, p)
 	}
 
+	if o.SnapshotDependencyTriggers {
+		p := NewProperty("watchChangesInDependencies", "true")
+		props = append(props, p)
+	}
+
 	if o.QuietPeriodInSeconds > 0 {
 		p := NewProperty("quietPeriod", strconv.Itoa(o.QuietPeriodInSeconds))
 		props = append(props, p)
@@ -143,6 +150,15 @@ func (p *Properties) triggerVcsOptions() (*TriggerVcsOptions, error) {
 		}
 		if v2 {
 			out.SetPerCheckinTriggering(v2)
+		}
+	}
+	if v, ok := p.GetOk("watchChangesInDependencies"); ok {
+		v2, err := strconv.ParseBool(v)
+		if err != nil {
+			return nil, err
+		}
+		if v2 {
+			out.SnapshotDependencyTriggers = v2
 		}
 	}
 	if v, ok := p.GetOk("enableQueueOptimization"); ok {
